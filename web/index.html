@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laudspeaker Control Center</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">L</div>
+          <div>
+            <h1>Laudspeaker</h1>
+            <p>Control Center</p>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item active">Overview</button>
+          <button class="nav-item">Devices</button>
+          <button class="nav-item">Zones</button>
+          <button class="nav-item">Scheduling</button>
+        </nav>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Operations</p>
+            <h2>Digital Laudspeaker Management System</h2>
+          </div>
+          <button id="refreshButton" class="primary-button">Refresh</button>
+        </header>
+
+        <section class="stats-grid">
+          <div class="stat-card">
+            <span>Total Devices</span>
+            <strong id="totalDevices">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>Online</span>
+            <strong id="onlineDevices">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>Active Zones</span>
+            <strong id="activeZones">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>Schedule</span>
+            <strong id="scheduleCount">0</strong>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Devices</h3>
+              <button class="secondary-button" id="testAllButton">Test All</button>
+            </div>
+            <div id="devicesList" class="device-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Announcements</h3>
+              <button class="secondary-button" id="announceButton">Queue Message</button>
+            </div>
+            <form id="announcementForm" class="announcement-form">
+              <select id="announceZone">
+                <option value="Gate">Gate</option>
+                <option value="Hall">Hall</option>
+              </select>
+              <textarea id="announceText" rows="4" placeholder="Type announcement message...">Good morning. Please proceed to the reception desk.</textarea>
+              <button class="primary-button" type="submit">Send</button>
+            </form>
+            <div id="announcementsList" class="announcement-list"></div>
+          </div>
+        </section>
+
+        <section class="panel lower-panel">
+          <div class="panel-header">
+            <h3>Scheduled Tasks</h3>
+          </div>
+          <div id="scheduleList" class="schedule-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

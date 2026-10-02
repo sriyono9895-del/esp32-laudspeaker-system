@@ -1,0 +1,23 @@
+{
+  "name": "esp32-laudspeaker-system",
+  "version": "1.0.0",
+  "description": "Digital laudspeaker management system powered by ESP32-S3",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "esp32",
+    "s3",
+    "audio",
+    "management",
+    "dashboard"
+  ],
+  "author": "GitHub Copilot",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

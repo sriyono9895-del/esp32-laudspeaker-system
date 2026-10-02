@@ -1,0 +1,147 @@
+const API_BASE = '/api';
+
+const ui = {
+  totalDevices: document.getElementById('totalDevices'),
+  onlineDevices: document.getElementById('onlineDevices'),
+  activeZones: document.getElementById('activeZones'),
+  scheduleCount: document.getElementById('scheduleCount'),
+  devicesList: document.getElementById('devicesList'),
+  announcementsList: document.getElementById('announcementsList'),
+  scheduleList: document.getElementById('scheduleList'),
+  refreshButton: document.getElementById('refreshButton'),
+  announceButton: document.getElementById('announceButton'),
+  announcementForm: document.getElementById('announcementForm'),
+  announceZone: document.getElementById('announceZone'),
+  announceText: document.getElementById('announceText'),
+  testAllButton: document.getElementById('testAllButton')
+};
+
+async function api(path, options = {}) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Request failed');
+  }
+
+  return response.json();
+}
+
+function renderDevices(devices) {
+  ui.devicesList.innerHTML = devices.map((device) => `
+    <div class="device-item">
+      <div class="device-info">
+        <h4>${device.name}</h4>
+        <p class="device-meta">${device.id} • ${device.zone} • ${device.ip}</p>
+      </div>
+      <div>
+        <span class="device-status ${device.status === 'online' ? '' : 'offline'}">${device.status}</span>
+        <div class="device-meta">Volume ${device.volume}%</div>
+      </div>
+    </div>
+  `).join('') || '<p>No devices found.</p>';
+
+  ui.totalDevices.textContent = devices.length;
+  ui.onlineDevices.textContent = devices.filter((d) => d.status === 'online').length;
+}
+
+function renderAnnouncements(items) {
+  ui.announcementsList.innerHTML = items.slice(-4).reverse().map((item) => `
+    <div class="announcement-item">
+      <p><strong>${item.zone}</strong> <span class="badge">${item.priority}</span></p>
+      <p>${item.text}</p>
+      <p class="device-meta">${item.status} • ${new Date(item.scheduledAt).toLocaleString()}</p>
+    </div>
+  `).join('') || '<p>No announcements queued.</p>';
+}
+
+function renderSchedule(items) {
+  ui.scheduleList.innerHTML = items.map((item) => `
+    <div class="schedule-item">
+      <div>
+        <h4>${item.name}</h4>
+        <p>${item.time} • ${item.zone}</p>
+      </div>
+      <span class="badge">${item.enabled ? 'Enabled' : 'Disabled'}</span>
+    </div>
+  `).join('') || '<p>No schedule entries found.</p>';
+
+  ui.scheduleCount.textContent = items.length;
+}
+
+async function loadDashboard() {
+  try {
+    const [devices, zones, announcements, schedule] = await Promise.all([
+      api('/devices'),
+      api('/zones'),
+      api('/announcements'),
+      api('/schedule')
+    ]);
+
+    renderDevices(devices);
+    ui.activeZones.textContent = zones.length;
+    renderAnnouncements(announcements);
+    renderSchedule(schedule);
+  } catch (error) {
+    console.error('Dashboard load failed', error);
+    ui.devicesList.innerHTML = '<p>Unable to load dashboard.</p>';
+  }
+}
+
+ui.refreshButton.addEventListener('click', loadDashboard);
+
+ui.announcementForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const payload = {
+    text: ui.announceText.value,
+    zone: ui.announceZone.value,
+    priority: 'normal'
+  };
+
+  try {
+    await api('/announce', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    ui.announceText.value = '';
+    loadDashboard();
+  } catch (error) {
+    console.error('Announcement failed', error);
+  }
+});
+
+ui.announceButton.addEventListener('click', async () => {
+  const defaultText = 'Attention. This is a system-wide announcement.';
+  ui.announceText.value = defaultText;
+  await api('/announce', {
+    method: 'POST',
+    body: JSON.stringify({ text: defaultText, zone: 'Gate', priority: 'high' })
+  });
+  loadDashboard();
+});
+
+ui.testAllButton.addEventListener('click', async () => {
+  try {
+    const devices = await api('/devices');
+    await Promise.all(
+      devices.map((device) =>
+        api('/device/command', {
+          method: 'POST',
+          body: JSON.stringify({
+            deviceId: device.id,
+            command: 'play',
+            value: 'System test tone'
+          })
+        })
+      )
+    );
+    alert('Test tones queued for all active devices.');
+  } catch (error) {
+    console.error('Test all failed', error);
+  }
+});
+
+loadDashboard();

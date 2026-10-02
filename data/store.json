@@ -1,0 +1,74 @@
+{
+  "devices": [
+    {
+      "id": "LDS-001",
+      "name": "Main Gate Speaker",
+      "ip": "192.168.1.51",
+      "status": "online",
+      "zone": "Gate",
+      "volume": 80,
+      "temperature": 36.4,
+      "uptime": 2384,
+      "lastSeen": "2026-10-02T09:00:00.000Z"
+    },
+    {
+      "id": "LDS-002",
+      "name": "Hall Speaker",
+      "ip": "192.168.1.52",
+      "status": "online",
+      "zone": "Hall",
+      "volume": 72,
+      "temperature": 34.8,
+      "uptime": 3120,
+      "lastSeen": "2026-10-02T09:00:00.000Z"
+    }
+  ],
+  "zones": [
+    {
+      "id": "zone-gate",
+      "name": "Gate",
+      "description": "Main entrance and lobby area",
+      "status": "active",
+      "volume": 80,
+      "deviceId": "LDS-001"
+    },
+    {
+      "id": "zone-hall",
+      "name": "Hall",
+      "description": "Main hall announcement zone",
+      "status": "active",
+      "volume": 72,
+      "deviceId": "LDS-002"
+    }
+  ],
+  "announcements": [
+    {
+      "id": 1,
+      "text": "Welcome to the building. Please proceed to the lobby.",
+      "zone": "Gate",
+      "priority": "normal",
+      "scheduledAt": "2026-10-02T08:45:00.000Z",
+      "status": "sent"
+    }
+  ],
+  "schedule": [
+    {
+      "id": 1,
+      "name": "Morning Greeting",
+      "enabled": true,
+      "time": "08:00",
+      "days": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      "message": "Good morning, this is a facility announcement.",
+      "zone": "Gate"
+    },
+    {
+      "id": 2,
+      "name": "Closing Reminder",
+      "enabled": true,
+      "time": "17:30",
+      "days": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      "message": "The building is closing soon. Please proceed to exit points.",
+      "zone": "Hall"
+    }
+  ]
+}
